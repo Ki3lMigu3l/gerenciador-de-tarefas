@@ -1,5 +1,6 @@
 package br.dev.ezcoder.tarefas.service.impl;
 
+import br.dev.ezcoder.tarefas.enums.TaskStatus;
 import br.dev.ezcoder.tarefas.model.Task;
 import br.dev.ezcoder.tarefas.repository.TaskRepository;
 import br.dev.ezcoder.tarefas.service.TaskService;
@@ -18,7 +19,10 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public Task save(Task task) {
+    public Task save(Task taskDTO) {
+        var task = new Task();
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
         return taskRepository.save(task);
     }
 
@@ -35,5 +39,13 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void delete(Task task) {
         taskRepository.delete(task);
+    }
+
+    @Override
+    public Task updateTaskStatus(UUID id, TaskStatus status) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found!"));
+        task.setStatus(status);
+        return taskRepository.save(task);
     }
 }

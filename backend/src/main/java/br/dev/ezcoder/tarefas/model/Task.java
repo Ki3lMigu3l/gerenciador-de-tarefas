@@ -1,17 +1,17 @@
 package br.dev.ezcoder.tarefas.model;
 
+import br.dev.ezcoder.tarefas.enums.TaskStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tarefas")
-@NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class Task {
 
     @Id
@@ -19,4 +19,13 @@ public class Task {
     private UUID id;
     private String title;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+    private LocalDateTime createdAt;
+
+    public Task () {
+        this.status = TaskStatus.PENDENTE;
+        this.createdAt = LocalDateTime.now();
+    }
 }

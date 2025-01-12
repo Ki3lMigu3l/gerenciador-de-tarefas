@@ -1,5 +1,6 @@
 package br.dev.ezcoder.tarefas.service;
 
+import br.dev.ezcoder.tarefas.enums.TaskStatus;
 import br.dev.ezcoder.tarefas.model.Task;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface TaskService {
     Optional<Task> findById(UUID id);
 
     void delete(Task task);
+
+    Task updateTaskStatus(UUID id, TaskStatus status);
 }

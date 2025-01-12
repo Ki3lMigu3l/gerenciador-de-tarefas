@@ -1,5 +1,6 @@
 package br.dev.ezcoder.tarefas.controller;
 
+import br.dev.ezcoder.tarefas.enums.TaskStatus;
 import br.dev.ezcoder.tarefas.model.Task;
 import br.dev.ezcoder.tarefas.model.TaskDTO;
 import br.dev.ezcoder.tarefas.service.TaskService;
@@ -15,24 +16,25 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/tasks")
 public class TaskController {
 
     @Autowired
     private TaskService taskService;
 
-    @PostMapping("/tasks")
+    @PostMapping
     public ResponseEntity<Task> createTask (@RequestBody TaskDTO taskDTO) {
         var task = new Task();
         BeanUtils.copyProperties(taskDTO, task);
         return ResponseEntity.status(HttpStatus.OK).body(taskService.save(task));
     }
 
-    @GetMapping("/tasks")
+    @GetMapping
     public ResponseEntity<List<Task>> getAllTasks () {
         return ResponseEntity.status(HttpStatus.OK).body(taskService.findAll());
     }
 
-    @GetMapping("/tasks/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getTaskById (@PathVariable UUID id) {
         Optional<Task> taskModelOptional = taskService.findById(id);
 
@@ -43,7 +45,7 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.OK).body(taskModelOptional.get());
     }
 
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> updateTask (@PathVariable UUID id, @RequestBody TaskDTO taskDTO) {
         Optional<Task> taskOptional = taskService.findById(id);
         if (taskOptional.isEmpty()) {
@@ -55,13 +57,22 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.OK).body(taskService.save(taskModel));
     }
 
-    @DeleteMapping("/tasks/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeTask (@PathVariable  UUID id) {
         Task task = taskService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         taskService.delete(task);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Task> updateStatus (@PathVariable UUID id, @RequestParam TaskStatus status) {
+        Task task = taskService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found!"));
+
+        task = taskService.updateTaskStatus(id, status);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
 }
