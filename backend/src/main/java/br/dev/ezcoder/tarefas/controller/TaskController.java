@@ -66,13 +66,15 @@ public class TaskController {
         taskService.delete(task);
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Task> updateStatus (@PathVariable UUID id, @RequestParam TaskStatus status) {
-        Task task = taskService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found!"));
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Object> updateStatus (@PathVariable UUID id, @RequestParam TaskStatus status) {
+        Optional<Task> taskOptional = taskService.findById(id);
 
-        task = taskService.updateTaskStatus(id, status);
-        return ResponseEntity.status(HttpStatus.OK).body(task);
+        if (taskOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found!");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.updateTaskStatus(id, status));
     }
 
 }
