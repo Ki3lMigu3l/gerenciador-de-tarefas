@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/tasks")
+@CrossOrigin("*")
 public class TaskController {
 
     @Autowired
